@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "telegram-a3a79": {
+      "hosting": {
+        "telegram": [
+          "telegram-a3a79"
+        ]
+      }
+    }
+  }
+}
