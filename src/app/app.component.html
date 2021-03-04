@@ -1,4 +1,4 @@
-<div *ngIf="!me" >
+<div *ngIf="!me">
   <h1>google</h1>
   <button (click)="googleLogin()">login</button>
 </div>
@@ -9,6 +9,7 @@
     ({{me.email}})
     <button (click)="logout()">logout</button>
   </h2>
+  <p>{{me.uid}}</p>
 
   <img src="{{me.photoURL}}" alt="">
 </div>
@@ -18,7 +19,7 @@
 <hr>
 <hr>
 <hr>
-<form >
+<form>
   <label>
     <input type="text" [(ngModel)]="token" name="name">
   </label>
@@ -33,7 +34,7 @@
 
 <div class="content-wrapper">
   <button (click)="newTask()">
-     Add Task
+    Add Task
   </button>
 
   <app-task *ngFor="let task of todo | async" [task]="task"></app-task>

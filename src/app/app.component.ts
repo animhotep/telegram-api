@@ -40,11 +40,12 @@ export class AppComponent implements OnInit{
 
   googleLogin(): void {
     const provider = new firebase.auth.GoogleAuthProvider();
-    this.afAuth.signInWithPopup(provider).then(r => this.me = r.user);
+
+    firebase.auth().signInWithPopup(provider).then(r => this.me = r.user);
   }
 
   logout(): void {
-    this.afAuth.signOut().then(() => this.me = null);
+    firebase.auth().signOut().then(() => this.me = null);
   }
 
   getMe(): void {
