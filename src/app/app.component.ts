@@ -43,6 +43,10 @@ export class AppComponent implements OnInit{
     this.afAuth.signInWithPopup(provider).then(r => this.me = r.user);
   }
 
+  logout(): void {
+    this.afAuth.signOut().then(() => this.me = null);
+  }
+
   getMe(): void {
     console.log(this.token);
 

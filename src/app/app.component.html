@@ -4,7 +4,12 @@
 </div>
 
 <div *ngIf="me">
-  <h2>{{me.displayName}} ({{me.email}})</h2>
+  <h2>
+    {{me.displayName}}
+    ({{me.email}})
+    <button (click)="logout()">logout</button>
+  </h2>
+
   <img src="{{me.photoURL}}" alt="">
 </div>
 
