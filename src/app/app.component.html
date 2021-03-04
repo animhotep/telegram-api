@@ -1,3 +1,17 @@
+
+<h1>google</h1>
+<button (click)="doFacebookLogin()">login</button>
+
+<div *ngIf="me">
+  <h2>{{me.displayName}} ({{me.email}})</h2>
+  <img src="{{me.photoURL}}" alt="">
+</div>
+
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
 <form >
   <label>
     <input type="text" [(ngModel)]="token" name="name">
