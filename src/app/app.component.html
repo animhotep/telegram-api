@@ -1,3 +1,15 @@
+<form >
+  <label>
+    <input type="text" [(ngModel)]="token" name="name">
+  </label>
+  <button (click)="getMe()">getMe</button>
+</form>
+
+
+<pre *ngIf="hero">
+  {{ hero.result.first_name | json}}
+</pre>
+
 
 <div class="content-wrapper">
   <button (click)="newTask()">
