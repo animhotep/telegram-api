@@ -1,6 +1,7 @@
-
-<h1>google</h1>
-<button (click)="doFacebookLogin()">login</button>
+<div *ngIf="!me" >
+  <h1>google</h1>
+  <button (click)="googleLogin()">login</button>
+</div>
 
 <div *ngIf="me">
   <h2>{{me.displayName}} ({{me.email}})</h2>

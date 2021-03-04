@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Hero, Task, User} from './task/task';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -21,7 +21,7 @@ const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent {
+export class AppComponent implements OnInit{
   me: User;
   hero: Hero;
   token = '755268878:AAFCRw_2VIC1v7zIn_F4ju7IWrAZCswP2IE';
@@ -34,30 +34,14 @@ export class AppComponent {
   ) {
   }
 
-  isLoggedIn() {
-    return this.afAuth.authState.pipe(first()).toPromise();
-  }
-
-  // tslint:disable-next-line:use-lifecycle-interface
   ngOnInit(): void {
-
-    this.isLoggedIn().then(r => {
-      this.me = r;
-      console.log(r);
-      console.log(r.displayName);
-      console.log(r.photoURL);
-    });
+    this.afAuth.authState.pipe(first()).subscribe(r => this.me = r);
   }
 
-  doFacebookLogin(): void {
+  googleLogin(): void {
     const provider = new firebase.auth.GoogleAuthProvider();
-
-    this.afAuth.signInWithPopup(provider).then(r => {
-      console.log(r);
-    });
-
+    this.afAuth.signInWithPopup(provider).then(r => this.me = r.user);
   }
-
 
   getMe(): void {
     console.log(this.token);
@@ -78,5 +62,3 @@ export class AppComponent {
     );
   }
 }
-
-
