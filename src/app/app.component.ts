@@ -21,8 +21,9 @@ const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   me: User;
+  role;
   hero: Hero;
   token = '755268878:AAFCRw_2VIC1v7zIn_F4ju7IWrAZCswP2IE';
   todo = getObservable(this.store.collection('todo'));
@@ -35,7 +36,13 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.afAuth.authState.pipe(first()).subscribe(r => this.me = r);
+    this.afAuth.authState.pipe(first()).subscribe(r => {
+      this.me = r;
+
+      this.store.collection('users', ref => ref.where('uid', '==', r.uid))
+        .valueChanges()
+        .subscribe((r: any) => this.role = r[0].role);
+    });
   }
 
   googleLogin(): void {
@@ -61,7 +68,7 @@ export class AppComponent implements OnInit{
 
   newTask(): void {
     this.store.collection('todo').add({
-        title: 'sadfasdfdsf',
+        title: new Date(),
         description: '123123123'
       }
     );
