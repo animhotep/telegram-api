@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AngularFireAuth} from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import {first} from 'rxjs/operators';
+import {first, take, timeout} from 'rxjs/operators';
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject([]);
@@ -15,6 +15,10 @@ const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   return subject;
 };
 
+interface MyUser extends firebase.User {
+  role: '';
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -22,8 +26,7 @@ const getObservable = (collection: AngularFirestoreCollection<Task>) => {
 })
 
 export class AppComponent implements OnInit {
-  me: User;
-  role;
+  me: MyUser;
   hero: Hero;
   token = '755268878:AAFCRw_2VIC1v7zIn_F4ju7IWrAZCswP2IE';
   todo = getObservable(this.store.collection('todo'));
@@ -36,23 +39,27 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.afAuth.authState.pipe(first()).subscribe(r => {
-      this.me = r;
+    this.afAuth.authState.pipe(first()).subscribe(r => this.getUser(r?.uid));
+  }
 
-      this.store.collection('users', ref => ref.where('uid', '==', r.uid))
-        .valueChanges()
-        .subscribe((r: any) => this.role = r[0].role);
-    });
+  private getUser(uid: string): void {
+    if (!uid) {
+      this.me = null;
+      return;
+    }
+    this.store.collection('users', ref => ref.where('uid', '==', uid))
+      .valueChanges()
+      .subscribe((r: any) => this.me = r[0]);
   }
 
   googleLogin(): void {
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    firebase.auth().signInWithPopup(provider).then(r => this.me = r.user);
+    firebase.auth().signInWithPopup(provider).then(r => this.getUser(r.user.uid));
   }
 
   logout(): void {
-    firebase.auth().signOut().then(() => this.me = null);
+    firebase.auth().signOut().then(() =>  setTimeout(() => this.me = null, 400));
   }
 
   getMe(): void {
@@ -74,3 +81,5 @@ export class AppComponent implements OnInit {
     );
   }
 }
+
+
