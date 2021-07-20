@@ -17,6 +17,15 @@
 
 <hr>
 <hr>
+
+
+<form [formGroup]='buyTicketForm' novalidate class="form" (ngSubmit)='buyTickets()'>
+  <input formControlName='emailControl' type="text" class="form-control" placeholder="Enter Email" />
+  <input formControlName='phoneControl' type="text" class="form-control" placeholder="Enter Phone" />
+  <button class="btn btn-info">Submit</button>
+</form>
+
+
 <hr>
 <hr>
 <hr>
@@ -38,7 +47,7 @@
     Add Task
   </button>
 
-  <app-task *ngFor="let task of todo | async" [task]="task"></app-task>
+  <app-task *ngFor="let task of items | async" [task]="task"></app-task>
 
 
   <div *ngFor="let task of todo | async">

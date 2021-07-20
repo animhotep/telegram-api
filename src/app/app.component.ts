@@ -1,11 +1,18 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Pipe, PipeTransform} from '@angular/core';
 import {Hero, Task, User} from './task/task';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, combineLatest} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AngularFireAuth} from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import {first, take, timeout} from 'rxjs/operators';
+import {first, map, startWith, take, timeout} from 'rxjs/operators';
+import {
+  FormControl,
+  FormGroup,
+  FormBuilder,
+  FormArray,
+  Validators
+} from '@angular/forms';
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject([]);
@@ -29,17 +36,38 @@ export class AppComponent implements OnInit {
   me: MyUser;
   hero: Hero;
   token = '755268878:AAFCRw_2VIC1v7zIn_F4ju7IWrAZCswP2IE';
-  todo = getObservable(this.store.collection('todo'));
+  todo: Observable<any[]> = getObservable(this.store.collection('todo'));
+  email: FormControl;
+  buyTicketForm: FormGroup;
+  filteredArticles$: Observable<any[]>;
+  items: Observable<any[]>;
 
   constructor(
     private store: AngularFirestore,
     private http: HttpClient,
-    public afAuth: AngularFireAuth
+    public afAuth: AngularFireAuth,
+    private fb: FormBuilder
   ) {
   }
 
   ngOnInit(): void {
     this.afAuth.authState.pipe(first()).subscribe(r => this.getUser(r?.uid));
+
+    this.buyTicketForm = this.fb.group(
+      {
+        emailControl: '',
+        phoneControl: 123
+      });
+
+    this.items = this.todo;
+    this.buyTicketForm.controls.emailControl.valueChanges.subscribe(value => {
+      this.items = this.todo.pipe(map(items => items.filter(item => item.description.toLowerCase().indexOf(value) > -1)));
+    });
+
+  }
+
+  buyTickets(): void {
+      console.log(this.buyTicketForm.value);
   }
 
   private getUser(uid: string): void {
@@ -59,7 +87,7 @@ export class AppComponent implements OnInit {
   }
 
   logout(): void {
-    firebase.auth().signOut().then(() =>  setTimeout(() => this.me = null, 400));
+    firebase.auth().signOut().then(() => setTimeout(() => this.me = null, 400));
   }
 
   getMe(): void {
