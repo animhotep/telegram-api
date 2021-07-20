@@ -9,11 +9,15 @@ import {AngularFirestoreModule} from '@angular/fire/firestore';
 import {environment} from '../environments/environment';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+import { NgrxComponent } from './ngrx/ngrx.component';
+import {counterReducer} from './ngrx/counter.reducer';
+import {StoreModule} from '@ngrx/store';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TaskComponent
+    TaskComponent,
+    NgrxComponent
   ],
   imports: [
     BrowserModule,
@@ -22,7 +26,8 @@ import {HttpClientModule} from '@angular/common/http';
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    StoreModule.forRoot({ count: counterReducer })
   ],
   providers: [],
   bootstrap: [AppComponent]
