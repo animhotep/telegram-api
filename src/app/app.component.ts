@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable, combineLatest} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {AngularFireAuth} from '@angular/fire/auth';
 import firebase from 'firebase/app';
-import {first, map, startWith, take, timeout} from 'rxjs/operators';
+import {filter, first, map, startWith, take, timeout} from 'rxjs/operators';
 import {
   FormControl,
   FormGroup,
@@ -13,6 +13,8 @@ import {
   FormArray,
   Validators
 } from '@angular/forms';
+import {Title} from '@angular/platform-browser';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 
 const getObservable = (collection: AngularFirestoreCollection<Task>) => {
   const subject = new BehaviorSubject([]);
@@ -46,11 +48,27 @@ export class AppComponent implements OnInit {
     private store: AngularFirestore,
     private http: HttpClient,
     public afAuth: AngularFireAuth,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private titleService: Title,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
   }
 
   ngOnInit(): void {
+    this.router
+      .events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      map(() => {
+        const child = this.activatedRoute.firstChild;
+
+        if (!child) return 'Home';
+
+        return child.snapshot.data.title;
+      })
+    ).subscribe((title: string) => this.titleService.setTitle(`Telegram | ${title}`));
+
+
     this.afAuth.authState.pipe(first()).subscribe(r => this.getUser(r?.uid));
 
     this.buyTicketForm = this.fb.group(
